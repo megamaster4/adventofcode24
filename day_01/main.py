@@ -34,13 +34,16 @@ def get_similarity(left: np.array, right: np.array) -> int:
     for i in left:
         counts = get_indices_of_number(right, i)
         similarity = np.append(similarity, i * len(counts[0]))
-
     return similarity
+
+
 def main():
     logger.info("Import data")
     data = import_data(file_path="./day_01/data/input.txt")
     left, right = assign_data(data)
-    logger.info(f"Assigned data, lenght of left: {len(left)}, lenght of right: {len(right)}")
+    logger.info(
+        f"Assigned data, lenght of left: {len(left)}, lenght of right: {len(right)}"
+    )
     distance = get_distance(left, right)
     sum_of_distance = np.sum(distance)
     logger.info(f"Calculated sum of distance: {sum_of_distance}")
@@ -48,7 +51,6 @@ def main():
     sum_of_similarity = np.sum(similarity)
     logger.info(f"Calculated similarity score: {sum_of_similarity}")
 
-    
-    
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

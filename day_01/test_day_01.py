@@ -2,6 +2,7 @@ import numpy as np
 
 from day_01.main import get_distance, get_similarity
 
+
 def test_get_distance():
     left = np.array([3, 4, 2, 1, 3, 3])
     right = np.array([4, 3, 5, 3, 9, 3])
