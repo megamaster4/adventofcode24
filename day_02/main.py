@@ -28,7 +28,6 @@ def check_safety(data: list[int]) -> int:
 
 
 def check_safety_problem_dampener(data: list[int]) -> int:
-    safe_reports = 0
     diffs = get_differences_arr(data)
     if check_safety(diffs):
         return 1
