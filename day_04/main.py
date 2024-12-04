@@ -1,19 +1,19 @@
 import numpy as np
+from pathlib import Path
 
 from loguru import logger
+
+
+def import_data(file_path: str):
+    return Path(file_path).read_text()
+
 
 def create_matrix_from_text(text: str) -> np.array:
     lines = text.strip().split('\n')
     return np.array([list(line) for line in lines])
 
 
-
-
-
-def find_xmas_both(arr: np.array, x: int) -> bool:
-    logger.debug(f"Array: {arr}")
-    logger.debug(f"X: {x}")
-    def find_xmas(arr: list[str], x: int) -> int:
+def find_xmas(arr: list[str], x: int) -> int:
         try:
             if arr[x+1] == 'M':
                 if arr[x+2] == 'A':
@@ -22,8 +22,46 @@ def find_xmas_both(arr: np.array, x: int) -> bool:
         except IndexError:
             return 0
         return 0
-    return sum([find_xmas(arr=arr, x=x), find_xmas(arr=np.flip(arr), x=len(arr)-1-x)])
 
+
+def find_horizontal(matrix: np.array) -> bool:
+    count = 0
+    for arr in matrix:
+        x = np.where(arr == 'X')[0]
+        for index in x:
+            count += sum([find_xmas(arr=arr, x=index), find_xmas(arr=arr[::-1], x=len(arr)-1-index)])
+    return count
+
+
+def find_vertical(matrix: np.array) -> bool:
+    count = 0
+    for i in range(matrix.shape[1]):
+        arr = matrix[:,i]
+        x = np.where(arr== 'X')[0]
+        for index in x:
+            count += sum([find_xmas(arr=arr, x=index), find_xmas(arr=arr[::-1], x=len(arr)-1-index)])
+    return count
+
+
+def find_diagonal(matrix: np.array) -> bool:
+    count = 0
+    for i in range(-matrix.shape[0]+1, matrix.shape[1]):
+        arr = np.diagonal(matrix, i)
+        x = np.where(arr == 'X')[0]
+        for index in x:
+            count += sum([find_xmas(arr=arr, x=index), find_xmas(arr=arr[::-1], x=len(arr)-1-index)])
+    return count
+
+
+def find_diagonal_reverse(matrix: np.array) -> bool:
+    count = 0
+    flipped = np.fliplr(matrix)
+    for i in range(-flipped.shape[0]+1, flipped.shape[1]):
+        arr = np.diagonal(flipped, i)
+        x = np.where(arr == 'X')[0]
+        for index in x:
+            count += sum([find_xmas(arr=arr, x=index), find_xmas(arr=arr[::-1], x=len(arr)-1-index)])
+    return count
 
 
 def main():
@@ -39,31 +77,19 @@ SAXAMASAAA
 MAMMMXMMMM
 MXMXAXMASX"""
 
-
-    matrix = create_matrix_from_text(text=matrix_txt)
+    matrix_text = import_data(file_path="./day_04/data/input.txt")
+    matrix = create_matrix_from_text(text=matrix_text)
     logger.info(f"Matrix: \n {matrix}")
-    y, x = np.where(matrix == 'X')
-    count_horizontal = 0
-    count_vertical = 0
-    count_diagonal_1 = 0
-    count_diagonal_2 = 0
-    for row, column in zip(y, x):
-        logger.debug(f'Row: {row}')
-        logger.debug(f'Column: {column}')
-        count_horizontal += find_xmas_both(arr=matrix[row], x=column)
-        count_vertical += find_xmas_both(arr=matrix[:, column], x=row)
-        diagonal_1 = np.diagonal(matrix, offset=column-row)
-        count_diagonal_1 += find_xmas_both(arr=diagonal_1, x=column)
-        diagonal_2 = np.diagonal(np.flipud(matrix), offset=(matrix.shape[1] - 1 - column) - row)
-        count_diagonal_2 += find_xmas_both(arr=diagonal_2, x=row)
-
-
+    count_horizontal = find_horizontal(matrix=matrix)
+    count_vertical = find_vertical(matrix=matrix)
+    count_diagonal = find_diagonal(matrix=matrix)
+    count_diagonal_reverse = find_diagonal_reverse(matrix=matrix)
 
     logger.info(f"Number of XMAS in horizontal: {count_horizontal}")
     logger.info(f"Number of XMAS in vertical: {count_vertical}")
-    logger.info(f"Number of XMAS in diagonal: {count_diagonal_1}")
-    logger.info(f"Number of XMAS in diagonal: {count_diagonal_2}")
-    logger.info(f"Total number of XMAS: {count_horizontal + count_vertical + count_diagonal_1 + count_diagonal_2}")
+    logger.info(f"Number of XMAS in diagonal: {count_diagonal}")
+    logger.info(f"Number of XMAS in diagonal reverse: {count_diagonal_reverse}")
+    logger.info(f"Total number of XMAS: {count_horizontal + count_vertical + count_diagonal + count_diagonal_reverse}")
     
 
 
