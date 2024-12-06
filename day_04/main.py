@@ -64,6 +64,19 @@ def find_diagonal_reverse(matrix: np.array) -> bool:
     return count
 
 
+def find_mas(matrix: np.array, x: np.array, y: np.array) -> int:
+    count = 0
+    for row, column in zip(x, y):
+        if row == 0 or row == matrix.shape[0] - 1 or column == 0 or column == matrix.shape[1] - 1:
+            continue
+        m_or_s = {'M': 'S', 'S': 'M'}
+        if matrix[row-1][column-1] in 'MS' and matrix[row+1][column+1] == m_or_s[matrix[row-1][column-1]]:
+            if matrix[row-1][column+1] in 'MS' and matrix[row+1][column-1] == m_or_s[matrix[row-1][column+1]]:
+                count += 1
+    return count
+        
+    
+
 def main():
     matrix_txt = """
 MMMSXXMASM
@@ -79,7 +92,7 @@ MXMXAXMASX"""
 
     matrix_text = import_data(file_path="./day_04/data/input.txt")
     matrix = create_matrix_from_text(text=matrix_text)
-    logger.info(f"Matrix: \n {matrix}")
+    # logger.info(f"Matrix: \n {matrix}")
     count_horizontal = find_horizontal(matrix=matrix)
     count_vertical = find_vertical(matrix=matrix)
     count_diagonal = find_diagonal(matrix=matrix)
@@ -90,6 +103,12 @@ MXMXAXMASX"""
     logger.info(f"Number of XMAS in diagonal: {count_diagonal}")
     logger.info(f"Number of XMAS in diagonal reverse: {count_diagonal_reverse}")
     logger.info(f"Total number of XMAS: {count_horizontal + count_vertical + count_diagonal + count_diagonal_reverse}")
+
+    # matrix = create_matrix_from_text(text=matrix_txt)
+    x, y = np.where(matrix == 'A')
+    logger.info(f"Matrix: \n {matrix}")
+    logger.info(f"Total number of X-MAS: {find_mas(matrix=matrix, x=x, y=y)}")
+
     
 
 
